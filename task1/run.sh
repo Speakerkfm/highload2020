@@ -1,0 +1,1 @@
+export `cat .env` && go run ./cmd/weather_service/main.go
