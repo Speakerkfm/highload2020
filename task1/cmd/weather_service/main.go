@@ -18,12 +18,13 @@ import (
 )
 
 func init() {
+	logger.NewLogger()
+
 	// config
 	if err := config.InitConfig(); err != nil {
-		log.Fatal(err)
+		logger.WLogger.Fatal().Err(err).Msg("fail to init config")
+		os.Exit(1)
 	}
-
-	logger.NewLogger()
 }
 
 func main() {
@@ -40,21 +41,22 @@ func main() {
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			logger.WLogger.Fatal().Err(err).Msgf("listen: %s\n", err)
 		}
 	}()
-	log.Println("Server started listening on port:", config.WConfig.Port)
+	log.Println("server started listening on port:", config.WConfig.Port)
 
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutting down server...")
+	logger.WLogger.Info().Msg("shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+		logger.WLogger.Fatal().Err(err).Msg("server forced to shutdown:")
+		os.Exit(1)
 	}
 
-	log.Println("Server exiting")
+	logger.WLogger.Info().Msg("server exiting")
 }
