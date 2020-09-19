@@ -29,8 +29,6 @@ func (c *controller) GetWeatherForecast(w http.ResponseWriter, r *http.Request) 
 
 	temperature, err := c.weather.GetTemperatureForecast(city, date)
 	if err != nil {
-		logger.WLogger.Err(err).Msg("fail to get temperature forecast")
-
 		if errors.Is(err, models.ErrInvalidDate) {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprint(w, `{"message": "Date is invalid"}`)
@@ -42,6 +40,8 @@ func (c *controller) GetWeatherForecast(w http.ResponseWriter, r *http.Request) 
 			fmt.Fprint(w, `{"message": "City not found"}`)
 			return
 		}
+
+		logger.WLogger.Err(err).Msg("fail to get temperature forecast")
 
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, `{"message": "Internal server error"}`)
