@@ -17,3 +17,6 @@ GET /v1/current/?city=<city>
 response: {
 "city": "Moscow", "unit": "celsius", "temperature": 25
 }
+
+Запуск сервиса:
+`./run.sh`
