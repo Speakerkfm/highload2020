@@ -1,0 +1,1 @@
+GOOS=linux go build cmd/mini_docker/main.go
