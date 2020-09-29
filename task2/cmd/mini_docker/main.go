@@ -64,7 +64,7 @@ func cg() {
 	ioutil.WriteFile(filepath.Join(pids, "ourContainer/cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700)
 
 	memory := filepath.Join(cgroups, "memory")
-	os.Mkdir(filepath.Join(pids, "ourContainer"), 0755)
+	os.Mkdir(filepath.Join(memory, "ourContainer"), 0755)
 
 	// setup memory limit
 	ioutil.WriteFile(filepath.Join(memory, "ourContainer/memory.limit_in_bytes"), []byte("52428800"), 0700)
