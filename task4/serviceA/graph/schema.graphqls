@@ -1,0 +1,16 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+input PhoneVerificationRequest {
+  phone: String!
+  code: String!
+}
+
+type PhoneVerificationResponse {
+  verified: Boolean!
+}
+
+type Mutation {
+  verifyPhone(input: PhoneVerificationRequest!): PhoneVerificationResponse!
+}

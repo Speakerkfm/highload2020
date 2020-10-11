@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service PhoneService {
+  rpc CheckPhone(CheckPhoneRequest) returns (CheckPhoneResponse);
+}
+
+message CheckPhoneRequest {
+  string phone = 1;
+}
+
+message CheckPhoneResponse {
+  bool exists = 1;
+}

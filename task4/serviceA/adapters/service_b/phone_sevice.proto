@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package servicebgrpc;
+
+option go_package = "serviceB/grpc/v1";
+
+service PhoneService {
+  rpc CheckPhone(CheckPhoneRequest) returns CheckPhoneResponse;
+}
+
+message CheckPhoneRequest {
+  string phone = 1;
+}
+
+message CheckPhoneResponse {
+  bool exists = 1;
+}
