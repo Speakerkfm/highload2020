@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 
+	"serviceA/adapters/domain/config"
+	"serviceA/adapters/domain/logger"
 	"serviceA/adapters/service_b"
 	"serviceA/graph"
 	"serviceA/graph/generated"
@@ -15,15 +18,18 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 )
 
-const defaultPort = "8080"
+func init() {
+	logger.NewLogger()
+
+	// config
+	if err := config.InitConfig(); err != nil {
+		logger.WLogger.Fatal().Err(err).Msg("fail to init config")
+		os.Exit(1)
+	}
+}
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
-
-	phoneService := service_b.NewPhoneService()
+	phoneService := service_b.NewPhoneService(fmt.Sprintf("%s:%d", config.WConfig.ServiceBHost, config.WConfig.ServiceBPort))
 	codeVerifier := internal.NewCodeVerifier()
 	phoneVerifier := usecases.NewPhoneVerifier(phoneService, codeVerifier)
 	resolver := graph.NewResolver(phoneVerifier)
@@ -32,6 +38,6 @@ func main() {
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", config.WConfig.Port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", config.WConfig.Port), nil))
 }

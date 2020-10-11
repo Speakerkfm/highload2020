@@ -1,11 +1,9 @@
 syntax = "proto3";
 
-package servicebgrpc;
-
-option go_package = "serviceB/grpc/v1";
+option go_package = "serviceA/adapters/service_b";
 
 service PhoneService {
-  rpc CheckPhone(CheckPhoneRequest) returns CheckPhoneResponse;
+  rpc CheckPhone(CheckPhoneRequest) returns (CheckPhoneResponse);
 }
 
 message CheckPhoneRequest {
