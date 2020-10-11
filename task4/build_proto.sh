@@ -1,1 +1,2 @@
 python3 -m grpc_tools.protoc --proto_path=./serviceB ./serviceB/phone_service.proto --python_out=./serviceB --grpc_python_out=./serviceB
+protoc --go_out=plugins=grpc:. ./serviceA/adapters/service_b/*.proto
