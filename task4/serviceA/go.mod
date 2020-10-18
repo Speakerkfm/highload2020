@@ -11,7 +11,7 @@ require (
 	github.com/matryer/moq v0.1.3 // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/rs/zerolog v1.20.0 // indirect
+	github.com/rs/zerolog v1.20.0
 	github.com/urfave/cli/v2 v2.2.0 // indirect
 	github.com/vektah/dataloaden v0.3.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.1.0

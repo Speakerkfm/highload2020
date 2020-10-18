@@ -1,0 +1,1 @@
+docker run --name my-nginx -v /Users/usanin.aleksandr/go/src/github.com/speakerkfm/highload2020/task5/nginx.conf:/etc/nginx/nginx.conf:ro -d --network=host nginx

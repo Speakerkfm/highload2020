@@ -38,6 +38,6 @@ func main() {
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", config.WConfig.Port)
+	log.Printf("connect to http://localhost:%d/ for GraphQL playground", config.WConfig.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", config.WConfig.Port), nil))
 }

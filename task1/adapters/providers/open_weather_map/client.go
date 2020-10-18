@@ -1,6 +1,7 @@
 package open_weather_map
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"time"
@@ -26,7 +27,7 @@ type weatherClient struct {
 
 func NewWeatherClient(openWeatherMapHost, apiKey string, timeout time.Duration) *weatherClient {
 	return &weatherClient{
-		restyClient:        resty.New(),
+		restyClient:        resty.New().SetTransport(&http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}),
 		openWeatherMapHost: openWeatherMapHost,
 		apiKey:             apiKey,
 		timeout:            timeout,
