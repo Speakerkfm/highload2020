@@ -11,6 +11,7 @@ import (
 )
 
 func (c *controller) GetCurrentWeather(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	city := r.URL.Query().Get("city")
 	if city == "" {
 		w.WriteHeader(http.StatusBadRequest)
