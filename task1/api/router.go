@@ -22,6 +22,7 @@ func NewRouter(weather WeatherService) http.Handler {
 
 	router.Route("/v1", func(r chi.Router) {
 		r.Use(middleware.Recoverer)
+		r.Use(middleware.Logger)
 		r.Get("/forecast/", ctrl.GetWeatherForecast)
 		r.Get("/current/", ctrl.GetCurrentWeather)
 	})
