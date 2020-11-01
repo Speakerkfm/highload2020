@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"weather_service/api/controller"
 	"weather_service/models"
@@ -20,6 +21,7 @@ func NewRouter(weather WeatherService) http.Handler {
 	router := chi.NewRouter()
 	ctrl := controller.New(weather)
 
+	router.Handle("/metrics", promhttp.Handler())
 	router.Route("/v1", func(r chi.Router) {
 		r.Use(middleware.Recoverer)
 		r.Use(middleware.Logger)
