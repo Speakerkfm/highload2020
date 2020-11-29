@@ -28,7 +28,7 @@ func (c *controller) GetWeatherForecast(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	temperature, err := c.weather.GetTemperatureForecast(city, date)
+	temperature, err := c.weather.GetTemperatureForecast(r.Context(), city, date)
 	if err != nil {
 		if errors.Is(err, models.ErrInvalidDate) {
 			w.WriteHeader(http.StatusBadRequest)

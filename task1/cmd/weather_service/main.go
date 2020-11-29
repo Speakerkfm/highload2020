@@ -10,10 +10,12 @@ import (
 	"syscall"
 	"time"
 
+	"weather_service/adapters/domain/aerospike"
 	"weather_service/adapters/domain/config"
 	"weather_service/adapters/domain/logger"
 	"weather_service/adapters/providers/open_weather_map"
 	"weather_service/api"
+	"weather_service/internal"
 	"weather_service/usecases"
 )
 
@@ -30,9 +32,18 @@ func init() {
 func main() {
 	openWeatherMapClient := open_weather_map.NewWeatherClient(config.WConfig.OpenWeatherMapHost, config.WConfig.OpenWeatherMapApiKey, 5*time.Second)
 
-	weatherService := usecases.NewWeatherService(openWeatherMapClient)
+	aeroStore, err := aerospike.New(config.WConfig.AerospikeDSN)
+	if err != nil {
+		logger.WLogger.Fatal().Err(err).Msg("fail to connect to aerospike")
+	}
 
-	router := api.NewRouter(weatherService)
+	weatherStore := internal.NewWeatherStore(aeroStore)
+
+	weatherService := internal.NewWeatherService(openWeatherMapClient, weatherStore)
+
+	weatherInformer := usecases.NewWeatherInformer(weatherService)
+
+	router := api.NewRouter(weatherInformer)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.WConfig.Port),

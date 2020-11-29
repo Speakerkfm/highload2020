@@ -2,6 +2,8 @@ package aerospike
 
 import (
 	"context"
+	"strconv"
+	"strings"
 
 	"github.com/aerospike/aerospike-client-go"
 
@@ -10,15 +12,28 @@ import (
 )
 
 const (
-	serviceName = "test"
+	serviceName = "weather"
 )
 
 type client struct {
 	*aerospike.Client
 }
 
-func New(host string, port int) (*client, error) {
-	c, err := aerospike.NewClient(host, port)
+func New(dsn string) (*client, error) {
+	hostPorts := strings.Split(dsn, ",")
+	var aeroHosts []*aerospike.Host
+	for _, h := range hostPorts {
+		hostPort := strings.Split(h, ":")
+		host := hostPort[0]
+		port, err := strconv.Atoi(hostPort[1])
+		if err != nil {
+			return nil, err
+		}
+
+		aeroHosts = append(aeroHosts, aerospike.NewHost(host, port))
+	}
+
+	c, err := aerospike.NewClientWithPolicyAndHost(nil, aeroHosts...)
 	if err != nil {
 		return nil, errors.Wrap(err, "fail to connect to aerospike")
 	}
@@ -26,37 +41,38 @@ func New(host string, port int) (*client, error) {
 	return &client{Client: c}, nil
 }
 
-func (c *client) SetWeatherInfo(ctx context.Context, key string, info models.WeatherInfo) error {
+func (c *client) Set(ctx context.Context, key string, value interface{}, ttl uint32) error {
 	if ctx.Err() == context.Canceled {
 		return errors.New("ctx done")
 	}
 
-	aeroKey, err := aerospike.NewKey(serviceName, "aerospike", key)
+	aeroKey, err := aerospike.NewKey(serviceName, models.WeatherInfoKey, key)
 	if err != nil {
 		return errors.Wrap(err, "fail to create key")
 	}
 
-	if err := c.Client.PutObject(nil, aeroKey, info); err != nil {
+	writePolicy := aerospike.NewWritePolicy(0, ttl)
+	if err := c.Client.PutObject(writePolicy, aeroKey, value); err != nil {
 		return errors.Wrap(err, "fail to put object")
 	}
 
 	return nil
 }
 
-func (c *client) GetWeatherInfo(ctx context.Context, key string) (models.WeatherInfo, error) {
+func (c *client) GetWeatherInfo(ctx context.Context, key string) (*models.WeatherInfo, error) {
 	if ctx.Err() == context.Canceled {
-		return models.WeatherInfo{}, errors.New("ctx done")
+		return nil, errors.New("ctx done")
 	}
 
-	aeroKey, err := aerospike.NewKey(serviceName, "aerospike", key)
+	aeroKey, err := aerospike.NewKey(serviceName, models.WeatherInfoKey, key)
 	if err != nil {
-		return models.WeatherInfo{}, errors.Wrap(err, "fail to create key")
+		return nil, errors.Wrap(err, "fail to create key")
 	}
 
 	info := models.WeatherInfo{}
 	if err := c.Client.GetObject(nil, aeroKey, &info); err != nil {
-		return models.WeatherInfo{}, errors.Wrap(err, "fail to put object")
+		return nil, errors.Wrap(err, "fail to put object")
 	}
 
-	return info, nil
+	return &info, nil
 }

@@ -1,6 +1,7 @@
 package open_weather_map
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"net/http"
@@ -37,7 +38,7 @@ func NewWeatherClient(openWeatherMapHost, apiKey string, timeout time.Duration) 
 	}
 }
 
-func (wc *weatherClient) GetCurrentWeather(query, units string) (models.WeatherInfo, error) {
+func (wc *weatherClient) GetCurrentWeather(ctx context.Context, query, units string) (models.WeatherInfo, error) {
 	result := struct {
 		Name string `json:"name"`
 		Main struct {
@@ -46,6 +47,7 @@ func (wc *weatherClient) GetCurrentWeather(query, units string) (models.WeatherI
 	}{}
 
 	resp, err := wc.restyClient.R().
+		SetContext(ctx).
 		SetHeader("X-RapidAPI-Host", wc.openWeatherMapHost).
 		SetHeader("X-RapidAPI-Key", wc.apiKey).
 		SetQueryParam("q", query).
@@ -73,7 +75,7 @@ func (wc *weatherClient) GetCurrentWeather(query, units string) (models.WeatherI
 	}, nil
 }
 
-func (wc *weatherClient) GetWeatherForecast(query, units string, date time.Time) (models.WeatherInfo, error) {
+func (wc *weatherClient) GetWeatherForecast(ctx context.Context, query, units string, date time.Time) (models.WeatherInfo, error) {
 	now := time.Now()
 	if date.After(now.Add(5*24*time.Hour)) || date.Before(now) {
 		return models.WeatherInfo{}, errors.WithStack(models.ErrInvalidDate)
@@ -92,6 +94,7 @@ func (wc *weatherClient) GetWeatherForecast(query, units string, date time.Time)
 	}{}
 
 	resp, err := wc.restyClient.R().
+		SetContext(ctx).
 		SetHeader("X-RapidAPI-Host", wc.openWeatherMapHost).
 		SetHeader("X-RapidAPI-Key", wc.apiKey).
 		SetQueryParam("q", query).

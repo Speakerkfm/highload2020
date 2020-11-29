@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -12,12 +13,13 @@ import (
 	"weather_service/models"
 )
 
-type WeatherService interface {
-	GetTemperatureForecast(city string, date time.Time) (models.TemperatureInfo, error)
-	GetCurrentTemperature(city string) (models.TemperatureInfo, error)
+type weatherInformer interface {
+	GetTemperatureForecast(ctx context.Context, city string, date time.Time) (models.TemperatureInfo, error)
+	GetCurrentTemperature(ctx context.Context, city string) (models.TemperatureInfo, error)
+	SaveWeatherInfo(ctx context.Context, weather models.WeatherInfo) error
 }
 
-func NewRouter(weather WeatherService) http.Handler {
+func NewRouter(weather weatherInformer) http.Handler {
 	router := chi.NewRouter()
 	ctrl := controller.New(weather)
 
@@ -28,6 +30,7 @@ func NewRouter(weather WeatherService) http.Handler {
 		r.Use(MiddlewareMetrics)
 		r.Get("/forecast/", ctrl.GetWeatherForecast)
 		r.Get("/current/", ctrl.GetCurrentWeather)
+		r.Put("/current/", ctrl.SaveCurrentWeather)
 	})
 
 	return router

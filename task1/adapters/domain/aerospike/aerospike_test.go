@@ -12,10 +12,10 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	client, err := aerospike.New("35.228.110.108", 3000)
+	client, err := aerospike.New("35.228.110.108:3000")
 	assert.Nil(t, err)
 
-	err = client.SetWeatherInfo(context.Background(), "test", models.WeatherInfo{CityName: "Perm"})
+	err = client.Set(context.Background(), "test", models.WeatherInfo{CityName: "Perm"}, 5)
 	assert.Nil(t, err)
 
 	info, err  := client.GetWeatherInfo(context.Background(), "test")

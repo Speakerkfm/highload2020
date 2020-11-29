@@ -7,4 +7,5 @@ import (
 var (
 	ErrInvalidDate  = errors.New("date is invalid")
 	ErrCityNotFound = errors.New("city not found")
+	ErrNotFound     = errors.New("not found")
 )
