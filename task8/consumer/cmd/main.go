@@ -19,7 +19,7 @@ const (
 
 func main() {
 	kcfg := &kafka.ConfigMap{
-		"bootstrap.servers": "192.168.99.100:32770,192.168.99.100:32771,192.168.99.100:32772",
+		"bootstrap.servers": "192.168.99.100:32768,192.168.99.100:32769,192.168.99.100:32770",
 		"group.id":          "myGroup",
 		"auto.offset.reset": "earliest",
 	}
