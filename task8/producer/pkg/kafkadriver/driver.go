@@ -21,7 +21,7 @@ func CreateProducer(topic string) (chan<- KafkaMsg, <-chan string, <-chan error)
 	go func() {
 		defer close(res)
 
-		p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "192.168.99.100:32770,192.168.99.100:32771,192.168.99.100:32772"})
+		p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "192.168.99.100:32768,192.168.99.100:32769,192.168.99.100:32770"})
 		if err != nil {
 			errs <- fmt.Errorf("failed to create producer: %w", err)
 			return
